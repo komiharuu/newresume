@@ -1,9 +1,9 @@
 
 
 import jwt from 'jsonwebtoken';
-import { prisma } from '../routers/index.js';
+import { prisma } from '../utils/prisma.util.js';
 
-const ACCESS_TOKEN_SECRET_KEY = process.env.ACCESS_TOKEN_SECRET_KEY;
+
 
 // Exporting the middleware function
 export default async function (req, res, next) {
@@ -21,14 +21,15 @@ export default async function (req, res, next) {
       throw new Error('지원하지 않는 인증 방식입니다');
     }
 
-    const decodedToken = jwt.verify(accessToken, ACCESS_TOKEN_SECRET_KEY);
+    const decodedToken = jwt.verify(accessToken,'aespa');
     const userId = decodedToken.userId;
 
-    const user = await prisma.users.findFirst({
+    const user = await prisma.user.findFirst({
       where: { userId: +userId },
     });
 
     if (!user) {
+      res.clearCookie('authorization');
       throw new Error('인증 정보와 일치하는 사용자가 없습니다.');
     }
 
