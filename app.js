@@ -2,7 +2,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import ErrorHandlingMiddleware from './src/middleware/validators.js';
+import validators from './src/middleware/validators.js';
 import UsersRouter from './src/routers/users.router.js';
 import ResumesRouter from './src/routers/resumes.router.js';
 import AuthRouter from './src/routers/auth.router.js';
@@ -18,7 +18,7 @@ app.use(cookieParser());
 app.use('/auth',  AuthRouter );
 app.use('/resume', ResumesRouter);
 app.use('/user', UsersRouter);
-app.use(ErrorHandlingMiddleware);
+app.use(validators);
 
 
 

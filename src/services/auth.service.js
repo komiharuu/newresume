@@ -1,52 +1,65 @@
-import { prisma } from '../utils/prisma.util.js';
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+import { HttpError } from '../errors/http.error.js';
 
 export class AuthService {
- signUp = async (email, password, name) => {
-  try {
-    const isExistUser = await prisma.user.findFirst({ where: { email } });
 
-    if (isExistUser) {
-      return { message: '이미 가입 된 사용자입니다.', };
-    }
-
-    if (password.length < 6) {
-      return { message: '비밀번호는 6자리 이상이어야 합니다.', };
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const userInfo = await prisma.user.create({
-      data: { email, name, password: hashedPassword }
-    });
-
-    userInfo.password = undefined;
-
-    return { message: '회원가입이 완료되었습니다.', userInfo };
-  } catch (err) {
-    throw new Error('서비스 오류: ' + err.message);
+  constructor( userRepository) {
+    // 생성자에서 전달받은 PostsRepository 의존성을 주입합니다.
+    this.userRepository =  userRepository;
   }
-};
 
- signIn = async (email, password) => {
-  try {
-    const user = await prisma.user.findFirst({ where: { email } });
+        signUp = async (email, password, name) => {
+          // 비밀번호 암호화
+          const hashedPassword = await bcrypt.hash(password, 10);
+          // 사용자 생성
+          const userInfo = await this.userRepository.createUser(email, hashedPassword, name);
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return { accessToken: null, message: '인증 정보가 유효하지 않습니다.' };
-    }
 
-    const accessToken = jwt.sign(
-      { userId: user.userId },
-      process.env.ACCESSTOKEN,
-      { expiresIn: '12h' }
-    );
+          delete userInfo.password;
+          return userInfo;
+        };
+      
 
-    return { accessToken, message: '로그인 성공' };
-  } catch (err) {
-    throw new Error('서비스 오류: ' + err.message);
-  }
-};
+        signIn = async (email, password) => {
+          try {
+            // 이메일로 사용자 조회
+            const user = await this.userRepository.findUserByEmail(email);
+        
+
+
+            if (!user) {
+              throw new HttpError.NotFound('사용자가 존재하지 않습니다.');
+            }
+
+
+            // 사용자가 존재하지 않거나 비밀번호가 일치하지 않는 경우
+            const passwordMatch = await bcrypt.compare(password, user.password);
+            if (!passwordMatch) {
+              throw new HttpError.BadRequest('비밀번호가 일치하지 않습니다.');
+            }
+        
+
+
+
+            // JWT 토큰 생성
+            const accessToken = jwt.sign(
+              { userId: user.userId },
+              process.env.ACCESSTOKEN,
+              { expiresIn: '12h' }
+            );
+        
+            return { accessToken};
+          } catch (err) {
+            throw new HttpError.InternalServerError('서비스 오류: ');
+          }
+        };
+
+
+
+  getUserById = async (userId) => {
+    return this.userRepository.findUserById(userId);
+  };
+        
 }

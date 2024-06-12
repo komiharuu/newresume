@@ -1,14 +1,18 @@
-// src/services/posts.service.js
 
-import { ResumesRepository } from '../repositories/posts.repository.js';
+
 
 export class ResumesService {
-  resumesRepository = new ResumesRepository();
+
+  constructor(resumesRepository) {
+    // 생성자에서 전달받은 PostsRepository 의존성을 주입합니다.
+    this.resumesRepository = resumesRepository;
+  }
+ 
 
 
   createResume = async ( user, title, introduce) => {
     // 저장소(Repository)에게 데이터를 요청합니다.
-    const createResume = await this.resumesRepository.createResume(  user, title, introduce);
+    const createResume = await this.resumesRepository.createResume(user, title, introduce);
       return{
         resumeId: createResume.resumeId,
         authorId: createResume.authorId,
