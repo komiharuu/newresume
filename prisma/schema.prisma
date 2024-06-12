@@ -24,7 +24,7 @@ model User {
   updatedAt    DateTime      @updatedAt
 
  
-  resumes       Resume[]
+  resume       Resume[]
 
   @@map("users")
 }
@@ -40,7 +40,7 @@ model Resume {
 
  author       User           @relation(fields: [authorId], references: [userId])
 
-  @@map("resumes")
+  @@map("resume")
 }
 
 enum ResumeStatus {

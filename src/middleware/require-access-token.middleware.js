@@ -3,12 +3,8 @@
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.util.js';
 
-
-
-// Exporting the middleware function
 export default async function (req, res, next) {
   try {
-
     const authorization = req.headers['authorization'];
 
     if (!authorization) {
@@ -21,7 +17,7 @@ export default async function (req, res, next) {
       throw new Error('지원하지 않는 인증 방식입니다');
     }
 
-    const decodedToken = jwt.verify(accessToken,'aespa');
+    const decodedToken = jwt.verify(accessToken, process.env.ACCESSTOKEN);
     const userId = decodedToken.userId;
 
     const user = await prisma.user.findFirst({
@@ -33,14 +29,11 @@ export default async function (req, res, next) {
       throw new Error('인증 정보와 일치하는 사용자가 없습니다.');
     }
 
-    
     req.user = user;
-  
 
-    next();
-  } catch (error) {
-    res.clearCookie('authorization');
-    switch (error.name) {
+    next(); 
+  } catch (err) {
+    switch (err.name) {
       case 'TokenExpiredError':
         return res.status(401).json({ message: '인증 정보가 만료되었습니다' });
       case 'JsonWebTokenError':
@@ -48,7 +41,7 @@ export default async function (req, res, next) {
       default:
         return res
           .status(401)
-          .json({ message: error.message ?? '인증 정보가 유효하지 않습니다.' });
+          .json({ message: err.message ?? '인증 정보가 유효하지 않습니다.' });
     }
   }
 }

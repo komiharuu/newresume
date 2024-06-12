@@ -1,16 +1,24 @@
-// /middlewares/error-handler.middleware.js
+import { HttpError } from '../errors/http.error.js';
 
-export default function (err, req, res, next) {
-  console.error(err);
-
-  // Joi 검증에서 에러가 발생하면, 클라이언트에게 에러 메시지를 전달합니다.
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({ errorMessage: err.message });
+// 에러 처리 Middleware
+const errorHandler = (error, req, res, next) => {
+  if (error instanceof HttpError.BadRequest) {
+    return res.status(HttpError.BadRequest.status).json({ error: error.message });
+  } else if (error instanceof HttpError.Unauthorized) {
+    return res.status(HttpError.Unauthorized.status).json({ error: error.message });
+  } else if (error instanceof HttpError.Forbidden) {
+    return res.status(HttpError.Forbidden.status).json({ error: error.message });
+  } else if (error instanceof HttpError.NotFound) {
+    return res.status(HttpError.NotFound.status).json({ error: error.message });
+  } else if (error instanceof HttpError.Conflict) {
+    return res.status(HttpError.Conflict.status).json({ error: error.message });
+  } else if (error instanceof HttpError.InternalServerError) {
+    return res.status(HttpError.InternalServerError.status).json({ error: error.message });
+  } else {
+    // 기타 에러의 경우 500 에러로 처리
+    console.error(error);
+    return res.status(HttpError.InternalServerError.status).json({ error: '서버 오류' });
   }
+};
 
-  // 그 외의 에러가 발생하면, 서버 에러로 처리합니다.
-  return res
-    .status(500)
-    .json({ errorMessage: '서버에서 에러가 발생하였습니다.' });
-}
-  
+export { errorHandler };
