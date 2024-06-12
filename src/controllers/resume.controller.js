@@ -1,11 +1,10 @@
 
 
-import { ResumesService } from '../services/resumes.service.js';
-
-export class ResumeController {
-  resumesService = new ResumesService(); 
-
-
+export class ResumesController {
+  constructor(resumesService) {
+    // 생성자에서 전달받은 PostsService의 의존성을 주입합니다.
+    this.resumesService = resumesService;
+  }
   createResume = async (req, res, next) => {
     try {
       const { title, introduce } = req.body;

@@ -9,6 +9,7 @@ const signInSchema = Joi.object({
     password: Joi.string().required().messages({
       'any.required': '비밀번호를 입력해주세요',
     }),
+    
   });
 
 export const SignInValidator = async (req, res, next) => {

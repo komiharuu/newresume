@@ -2,8 +2,13 @@
 
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.util.js';
+import { UserRepository } from '../repositories/users.repository.js';
+import { AuthService } from '../services/auth.service.js';
 
-export default async function (req, res, next) {
+const userRepository = new UserRepository(prisma);
+const authService = new AuthService(userRepository);
+
+export default async function accessToken(req, res, next) {
   try {
     const authorization = req.headers['authorization'];
 
@@ -20,9 +25,7 @@ export default async function (req, res, next) {
     const decodedToken = jwt.verify(accessToken, process.env.ACCESSTOKEN);
     const userId = decodedToken.userId;
 
-    const user = await prisma.user.findFirst({
-      where: { userId: +userId },
-    });
+    const user = await authService.getUserById(userId);
 
     if (!user) {
       res.clearCookie('authorization');
@@ -31,7 +34,7 @@ export default async function (req, res, next) {
 
     req.user = user;
 
-    next(); 
+    next();
   } catch (err) {
     switch (err.name) {
       case 'TokenExpiredError':

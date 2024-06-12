@@ -1,0 +1,1 @@
+export const MIN_INTRODUCE_LENGTH = 150;
