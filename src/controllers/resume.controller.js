@@ -33,12 +33,12 @@ export class ResumesController {
     }
   };
 
-  getPostById = async (req, res, next) => {
+  getResumeById = async (req, res, next) => {
     try {
       const { resumeId } = req.params;
 
       // 서비스 계층에 구현된 findPostById 로직을 실행합니다.
-      const resume = await this.resumesService.findPostById(resumeId);
+      const resume = await this.resumesService.findResumeById(resumeId);
 
       return res.status(200).json({ data: resume });
     } catch (err) {
@@ -66,7 +66,7 @@ export class ResumesController {
     }
   };
 
-  deletePost = async (req, res, next) => {
+  deleteResume = async (req, res, next) => {
     try {
       const { resumeId } = req.params;
 

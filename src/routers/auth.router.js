@@ -11,7 +11,7 @@ import { AuthService } from '../services/auth.service.js';
 
 
 // import { errorHandlerMiddleware } from '../middleware/error-handler.middleware.js';
-const router = express.Router();
+const authRouter = express.Router();
 
 // router.use(errorHandlerMiddleware);
 const userRepository = new UserRepository(prisma);
@@ -23,8 +23,8 @@ const authController = new AuthController(authService);
 
 
 /** 회원가입 API **/
-router.post('/sign-up', SignUpValidator, authController.signUp);
+authRouter.post('/sign-up', SignUpValidator, authController.signUp);
 /** 로그인 API **/
-router.post('/sign-in', SignInValidator, authController.signIn);
+authRouter.post('/sign-in', SignInValidator, authController.signIn);
 
-export default router;
+export { authRouter };

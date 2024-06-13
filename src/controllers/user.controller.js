@@ -14,7 +14,7 @@ export class UserController {
     const { userId } = req.params;
   
 
-    const userInfo = await this.userRepository.getUserById(userId);
+    const userInfo = await this.userRepository.findUserById(userId);
     
     return res.status(200).json({ data: userInfo });
   } catch (err) {

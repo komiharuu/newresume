@@ -32,7 +32,7 @@ export class AuthController {
     res.header('authorization', accessToken);
     return res.status(200).json({ accessToken });
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     next(err);
   }
 };
