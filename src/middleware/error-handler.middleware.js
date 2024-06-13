@@ -1,4 +1,4 @@
-// error.middleware.js
+
 
 import { HttpError } from '../errors/http.error.js';
 
@@ -10,7 +10,7 @@ export function errorHandler(err, req, res, next) {
   } else {
     // 기타 오류 처리
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: '에러가 발생했습니다' });
   }
 }
 

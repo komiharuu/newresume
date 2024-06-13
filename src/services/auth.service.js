@@ -11,6 +11,14 @@ export class AuthService {
   }
 
         signUp = async (email, password, name) => {
+
+
+          const user = await this.userRepository.findUserByEmail(email);
+          if ( user) {
+            throw new HttpError.Conflict('이미 존재하는 이메일입니다.');
+          }
+
+
           // 비밀번호 암호화
           const hashedPassword = await bcrypt.hash(password, 10);
           // 사용자 생성
@@ -26,9 +34,6 @@ export class AuthService {
           try {
             // 이메일로 사용자 조회
             const user = await this.userRepository.findUserByEmail(email);
-        
-
-
             if (!user) {
               throw new HttpError.NotFound('사용자가 존재하지 않습니다.');
             }
@@ -37,11 +42,8 @@ export class AuthService {
             // 사용자가 존재하지 않거나 비밀번호가 일치하지 않는 경우
             const passwordMatch = await bcrypt.compare(password, user.password);
             if (!passwordMatch) {
-              throw new HttpError.BadRequest('비밀번호가 일치하지 않습니다.');
+              throw new HttpError.Unauthorized('비밀번호가 일치하지 않습니다.');
             }
-        
-
-
 
             // JWT 토큰 생성
             const accessToken = jwt.sign(
@@ -52,14 +54,13 @@ export class AuthService {
         
             return { accessToken};
           } catch (err) {
-            throw new HttpError.InternalServerError('서비스 오류: ');
+            console.error(err);
+            throw new HttpError.InternalServerError('서비스 오류 ');
           }
         };
 
 
 
-  getUserById = async (userId) => {
-    return this.userRepository.findUserById(userId);
-  };
+
         
 }

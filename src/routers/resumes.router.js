@@ -8,7 +8,7 @@ import { ResumesService } from '../services/resumes.service.js';
 import { ResumesController} from '../controllers/resume.controller.js';
 import { prisma } from '../utils/prisma.util.js';
 
-const router = express.Router();
+const  resumesRouter = express.Router();
 
 // PostsController의 인스턴스를 생성합니다.
 const resumesRepository = new ResumesRepository(prisma);
@@ -16,23 +16,23 @@ const resumesService = new ResumesService(resumesRepository);
 const resumesController = new ResumesController(resumesService);
 
 /** 이력서 작성 API **/
-router.post('/', accessMiddleware, ResumeValidator, resumesController.createResume);
+resumesRouter.post('/', accessMiddleware, ResumeValidator, resumesController.createResume);
 
 
 /** 이력서 조회 API **/
-router.get('/', resumesController.getResumes);
+resumesRouter.get('/', resumesController.getResumes);
 
 /** 이력서 상세 조회 API **/
-router.get('/:resumeId', resumesController.getPostById);
+resumesRouter.get('/:resumeId', resumesController.getResumeById);
 
 
 /** 이력서 수정 API **/
-router.patch('/:resumeId', accessMiddleware, resumesController.updateResume);
+resumesRouter.patch('/:resumeId', accessMiddleware, ResumeValidator, resumesController.updateResume);
 
 /** 이력서 삭제 API **/
-router.delete('/:resumeId', accessMiddleware, resumesController.deletePost);
+resumesRouter.delete('/:resumeId', accessMiddleware, resumesController.deleteResume);
 
-export default router;
+export { resumesRouter };
 
 
 

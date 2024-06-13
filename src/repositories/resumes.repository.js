@@ -7,7 +7,7 @@ export class ResumesRepository {
     this.prisma = prisma;
   }
 
-
+// 이력서 생성
   createResume = async (user, title, introduce, status) => {
     // user 객체로부터 userId를 추출합니다.
     const resume = await this.prisma.resume.create({
@@ -19,7 +19,7 @@ export class ResumesRepository {
         },
     });
 
-    return resume; // 이제 이력서 객체 전체를 반환합니다.
+    return resume; 
 };
 
 
@@ -46,9 +46,9 @@ export class ResumesRepository {
     return resumes;
   };
 
-  findPostById = async (resumeId) => {
-    // ORM인 Prisma에서 Posts 모델의 findUnique 메서드를 사용해 데이터를 요청합니다.
-    const resumes = await this.prisma.resume.findFirst({
+  findResumeById = async (resumeId) => {
+    
+    const resumes = await this.prisma.resume.findUnique({
       where: { resumeId: +resumeId },
       select: {
         resumeId: true,
@@ -66,9 +66,9 @@ export class ResumesRepository {
   };
 
 
-
-  findResumeById = async (resumeId,  title, introduce) => {
-    // ORM인 Prisma에서 Posts 모델의 update 메서드를 사용해 데이터를 수정합니다.
+// 데이터 수정
+  updateResume = async (resumeId,  title, introduce) => {
+  
     const resumes = await this.prisma.resume.update({
       where: {
         resumeId: +resumeId,
@@ -82,8 +82,9 @@ export class ResumesRepository {
     return resumes;
   };
 
+  // 데이터 삭제
   deleteResume = async (resumeId) => {
-    // ORM인 Prisma에서 Posts 모델의 delete 메서드를 사용해 데이터를 삭제합니다.
+
     const deletedPost = await this.prisma.resume.delete({
       where: {
         resumeId: +resumeId

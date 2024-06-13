@@ -3,10 +3,8 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import validators from './src/middleware/validators.js';
-import UsersRouter from './src/routers/users.router.js';
-import ResumesRouter from './src/routers/resumes.router.js';
-import AuthRouter from './src/routers/auth.router.js';
-
+import { errorHandler } from './src/middleware/error-handler.middleware.js';
+import { apiRouter } from './src/routers/index.js';
 
 dotenv.config();
 
@@ -15,11 +13,9 @@ const PORT = process.env.PORT
 
 app.use(express.json());
 app.use(cookieParser());
-app.use('/auth',  AuthRouter );
-app.use('/resume', ResumesRouter);
-app.use('/user', UsersRouter);
+app.use('/', apiRouter);
 app.use(validators);
-
+app.use(errorHandler);
 
 
 app.listen(PORT, () => {
