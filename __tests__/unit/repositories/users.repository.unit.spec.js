@@ -1,9 +1,9 @@
 import { beforeEach, describe, jest, test, expect } from '@jest/globals';
 import { UserRepository } from '../../../src/repositories/users.repository.js';
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
+import { dummyUsers } from '../../dummies/users.dummy.js';
 
 const mockPrisma = {
-  template: {
+  user: {
     create: jest.fn(),
     findUnique: jest.fn(),
     findFirst: jest.fn(),
@@ -16,26 +16,62 @@ const userRepository = new UserRepository(mockPrisma);
 
 describe('UserRepository Unit Test', () => {
   beforeEach(() => {
-    jest.resetAllMocks(); // 모든 Mock을 초기화합니다
+    jest.clearAllMocks(); // 모든 Mock을 초기화합니다.
   });
 
   test('createUser Method', async () => {
     // GIVEN
+    const newUser = dummyUsers[0];
+    mockPrisma.user.create.mockResolvedValue(newUser);
+
     // WHEN
+    const result = await userRepository.createUser(newUser);
+
     // THEN
+    expect(mockPrisma.user.create).toHaveBeenCalledWith({
+      data: {
+        email: newUser.email,
+        password: newUser.password,
+        name: newUser.name,
+      },
+    });
+    expect(result).toEqual(newUser);
   });
 
   test('findUserById Method', async () => {
     // GIVEN
+    const userId = dummyUsers[1].id;
+    const foundUser = dummyUsers[1];
+    mockPrisma.user.findUnique.mockResolvedValue(foundUser);
+
     // WHEN
+    const result = await userRepository.findUserById(userId);
+
     // THEN
+    expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
+      where: {
+        id: userId,
+      },
+    });
+    expect(result).toEqual(foundUser);
   });
 
   test('findUserByEmail Method', async () => {
     // GIVEN
+    const userEmail = dummyUsers[1].email;
+    const foundUser = dummyUsers[1];
+    mockPrisma.user.findFirst.mockResolvedValue(foundUser);
+
     // WHEN
+    const result = await userRepository.findUserByEmail(userEmail);
+
     // THEN
+    expect(mockPrisma.user.findFirst).toHaveBeenCalledWith({
+      where: {
+        email: userEmail,
+      },
+    });
+    expect(result).toEqual(foundUser);
   });
-
-
 });
+

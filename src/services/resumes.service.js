@@ -25,8 +25,6 @@ export class ResumesService {
     }
   
 
-
-
     findAllResumes = async () => {
       // 저장소(Repository)에게 데이터를 요청합니다.
       const resumes = await this.resumesRepository.findAllResumes();
@@ -37,29 +35,30 @@ export class ResumesService {
       });
     
       // 비즈니스 로직을 수행한 후 사용자에게 보여줄 데이터를 가공합니다.
-      return resumes.map((resume) => {
-        return {
-          resumeId: resume.resumeId,
-          authorId: resume.authorId,
-          title: resume.title,
-          status: resume.status,
-          introduce: resume.introduce,
-          createdAt: resume.createdAt,
-          updatedAt: resume.updatedAt,
-        };
-      });
+      return resumes.map((resume) => ({
+        resumeId: resume.resumeId,
+        authorId: resume.authorId,
+        author:  resume.author, // 작성자의 이름만 선택
+        title: resume.title,
+        status: resume.status,
+        introduce: resume.introduce,
+        createdAt: resume.createdAt,
+        updatedAt: resume.updatedAt,
+      }));
     };
+    
     
 
     findResumeById = async (resumeId) => {
     // 저장소(Repository)에게 특정 게시글 하나를 요청합니다.
-    const resumes = await this.resumesRepository. findResumeById(resumeId);
+    const resumes = await this.resumesRepository.findResumeById(resumeId);
 
     return {
       resumeId: resumes.resumeId,
       authorId: resumes.authorId,
       title: resumes.title,
       status: resumes.status,
+      author: resumes.author, 
       introduce: resumes.introduce,
       createdAt: resumes.createdAt,
       updatedAt: resumes.updatedAt,
