@@ -29,41 +29,50 @@ export class ResumesRepository {
 
 
 
-
-  findAllResumes = async () => {
-    const resumes = await this.prisma.resume.findMany({
-      select: {
-        resumeId: true,
-        authorId: true,
-        title: true,
-        status: true,
-        introduce: true,
-        createdAt: true,
-        updatedAt: true,
+findAllResumes = async () => {
+  const resumes = await this.prisma.resume.findMany({
+    select: {
+      resumeId: true,
+      authorId: true,
+      title: true,
+      status: true,
+      introduce: true,
+      createdAt: true,
+      updatedAt: true,
+      author: {
+        select: {
+          name: true,
+        },
       },
-    });
+    },
+  });
 
-    return resumes;
-  };
+  return resumes;
+};
 
-  findResumeById = async (resumeId) => {
-    
-    const resumes = await this.prisma.resume.findUnique({
-      where: { resumeId: +resumeId },
-      select: {
-        resumeId: true,
-        authorId: true,
-        title: true,
-        status: true,
-        introduce: true,
-        createdAt: true,
-        updatedAt: true,
+
+findResumeById = async (resumeId) => {
+  const resume = await this.prisma.resume.findUnique({
+    where: { resumeId: +resumeId },
+    select: {
+      resumeId: true,
+      authorId: true,
+      title: true,
+      status: true,
+      introduce: true,
+      createdAt: true,
+      updatedAt: true,
+      author: {
+        select: {
+          name: true,
+        },
       },
-    });
-  
+    },
+  });
 
-    return resumes;
-  };
+  return resume;
+};
+
 
 
 // 데이터 수정
